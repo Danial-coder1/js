@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Реквизиты для оплаты</title>
+  <meta name="description" content="Удобная страница с реквизитами для оплаты: копирование в один клик, печать и тёмная тема." />
+  <style>
+    :root{
+      --bg:#0b0c10; --card:#111319; --muted:#687285; --text:#e8ebf1; --accent:#4f8cff; --accent-2:#2ee59d;
+      --border: #1c2333;
+    }
+    :root.light{
+      --bg:#f5f7fb; --card:#ffffff; --muted:#5a6b87; --text:#0e1422; --accent:#3b6cff; --accent-2:#0dbb78; --border:#e7ecf5;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font:16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg), #000 10%) 100%);
+      color:var(--text);
+    }
+    .wrap{max-width:980px; margin:40px auto; padding:0 20px}
+    .card{background:var(--card); border:1px solid var(--border); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.18); overflow:hidden}
+    header{
+      display:flex; align-items:center; justify-content:space-between; padding:22px 22px; border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg, color-mix(in srgb, var(--card), #fff 4%), var(--card));
+    }
+    .brand{display:flex; gap:14px; align-items:center}
+    .logo{width:42px; height:42px; border-radius:12px; background:conic-gradient(from 200deg, var(--accent), var(--accent-2));}
+    h1{font-size:20px; margin:0}
+    .muted{color:var(--muted)}
+    .controls{display:flex; gap:10px}
+    button, .btn{
+      appearance:none; border:1px solid var(--border); background:transparent; color:var(--text);
+      padding:10px 14px; border-radius:12px; cursor:pointer; transition:.2s ease; font-weight:600;
+    }
+    button:hover{border-color:color-mix(in srgb, var(--accent), #fff 10%)}
+    .btn-primary{background:var(--accent); border-color:transparent; color:#fff}
+    .btn-primary:hover{filter:brightness(1.05)}
+
+    .grid{display:grid; gap:14px; padding:22px}
+    @media (min-width:720px){ .grid{grid-template-columns:1fr 1fr} }
+
+    .field{display:flex; flex-direction:column; gap:8px; background:linear-gradient(180deg, color-mix(in srgb, var(--card), #fff 4%), var(--card)); border:1px solid var(--border); border-radius:14px; padding:14px}
+    .label{font-size:13px; letter-spacing:.2px; color:var(--muted)}
+    .row{display:flex; align-items:center; gap:10px}
+    input, textarea{
+      flex:1; resize:none; width:100%; border:1px dashed var(--border); background:transparent; color:var(--text);
+      padding:10px 12px; border-radius:10px; outline:none; font:inherit
+    }
+    input:focus, textarea:focus{border-color:var(--accent)}
+    .copy{white-space:nowrap}
+
+    .note{padding:0 22px 22px}
+    .note p{margin:.5em 0}
+
+    footer{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:18px 22px; border-top:1px solid var(--border)}
+    .mini{font-size:12px}
+
+    .two{grid-column:1/-1}
+
+    @media print{
+      :root{--bg:#fff; --card:#fff; --text:#000; --muted:#333; --border:#ddd}
+      body{background:#fff}
+      header .controls, footer .controls{display:none}
+      .card{box-shadow:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <header>
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>Реквизиты для оплаты</h1>
+            <div class="muted">Скопируйте нужные поля или распечатайте</div>
+          </div>
+        </div>
+        <div class="controls">
+          <button id="themeBtn" title="Сменить тему">🌗 Тема</button>
+          <button id="copyAll" class="btn-primary" title="Скопировать все реквизиты">📋 Скопировать всё</button>
+          <button id="printBtn" title="Печать">🖨️ Печать</button>
+        </div>
+      </header>
+
+      <div class="grid">
+        <div class="field">
+          <div class="label">Наименование / ФИО</div>
+          <div class="row">
+            <input id="name" value="ТОО «Пример» / Иванов Иван Иванович" />
+            <button class="copy" data-target="name">Копировать</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">БИН / ИИН</div>
+          <div class="row">
+            <input id="iin" value="123456789012" />
+            <button class="copy" data-target="iin">Копировать</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">Банк</div>
+          <div class="row">
+            <input id="bank" value="Kaspi Bank" />
+            <button class="copy" data-target="bank">Копировать</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">БИК</div>
+          <div class="row">
+            <input id="bic" value="CASPKZKA" />
+            <button class="copy" data-target="bic">Копировать</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">ИИК / IBAN</div>
+          <div class="row">
+            <input id="iban" value="KZ123456789012345678" />
+            <button class="copy" data-target="iban">Копировать</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">КБЕ</div>
+          <div class="row">
+            <input id="kbe" value="17" />
+            <button class="copy" data-target="kbe">Копировать</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">КНП</div>
+          <div class="row">
+            <input id="knp" value="851" />
+            <button class="copy" data-target="knp">Копировать</button>
+          </div>
+        </div>
+
+        <div class="field two">
+          <div class="label">Назначение платежа</div>
+          <div class="row">
+            <textarea id="purpose" rows="2">Оплата за услуги по договору №001 от 01.01.2025 без НДС</textarea>
+            <button class="copy" data-target="purpose">Копировать</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">Телефон</div>
+          <div class="row">
+            <input id="phone" value="+7 777 123 45 67" />
+            <button class="copy" data-target="phone">Копировать</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">E‑mail</div>
+          <div class="row">
+            <input id="email" value="pay@primer.kz" />
+            <button class="copy" data-target="email">Копировать</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">Адрес (юридический)</div>
+          <div class="row">
+            <input id="addr" value="050000, г. Алматы, ул. Абая, 10, офис 101" />
+            <button class="copy" data-target="addr">Копировать</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">Дополнительно</div>
+          <div class="row">
+            <input id="extra" value="Безналичный расчет / Без НДС" />
+            <button class="copy" data-target="extra">Копировать</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="note">
+        <p class="muted mini">Подсказка: вы можете отредактировать любые поля прямо на странице перед копированием или печатью.</p>
+      </div>
+
+      <footer>
+        <div class="mini muted">© <span id="year"></span> Ваше название. Все права защищены.</div>
+        <div class="controls">
+          <a class="btn" href="#" id="exportBtn" title="Сохранить как файл HTML">💾 Сохранить</a>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // Тема (светлая/тёмная)
+    const themeBtn = document.getElementById('themeBtn');
+    const root = document.documentElement;
+    const THEME_KEY = 'requisites-theme';
+    function setTheme(mode){
+      if(mode === 'light'){ root.classList.add('light'); }
+      else { root.classList.remove('light'); }
+      localStorage.setItem(THEME_KEY, mode);
+    }
+    const saved = localStorage.getItem(THEME_KEY);
+    setTheme(saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+    themeBtn.addEventListener('click', ()=> setTheme(root.classList.contains('light') ? 'dark' : 'light'));
+
+    // Копирование отдельных полей
+    function copyValueById(id){
+      const el = document.getElementById(id);
+      const value = el.value || el.textContent;
+      navigator.clipboard.writeText(value).then(()=> toast('Скопировано'));
+    }
+    document.querySelectorAll('button.copy').forEach(btn=>{
+      btn.addEventListener('click', ()=> copyValueById(btn.dataset.target));
+    });
+
+    // Копирование всех реквизитов
+    const copyAll = document.getElementById('copyAll');
+    copyAll.addEventListener('click', ()=>{
+      const fields = [
+        ['Наименование / ФИО', 'name'],
+        ['БИН / ИИН', 'iin'],
+        ['Банк', 'bank'],
+        ['БИК', 'bic'],
+        ['ИИК / IBAN', 'iban'],
+        ['КБЕ', 'kbe'],
+        ['КНП', 'knp'],
+        ['Назначение платежа', 'purpose'],
+        ['Телефон', 'phone'],
+        ['E‑mail', 'email'],
+        ['Адрес', 'addr'],
+        ['Дополнительно', 'extra']
+      ];
+      const text = fields.map(([label,id])=> `${label}: ${document.getElementById(id).value || document.getElementById(id).textContent}`).join('\n');
+      navigator.clipboard.writeText(text).then(()=> toast('Все реквизиты скопированы'));
+    });
+
+    // Печать
+    document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+    // Год в подвале
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Сохранение как HTML
+    document.getElementById('exportBtn').addEventListener('click', (e)=>{
+      e.preventDefault();
+      const blob = new Blob([document.documentElement.outerHTML], {type: 'text/html;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'requisites.html';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      toast('Файл сохранён');
+    });
+
+    // Небольшой тост
+    const toastBox = document.createElement('div');
+    toastBox.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:10px 14px;border-radius:12px;background:var(--accent);color:#fff;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:9999';
+    document.body.appendChild(toastBox);
+    let toastTimer;
+    function toast(text){
+      toastBox.textContent = text;
+      toastBox.style.opacity = '1';
+      toastBox.style.transform = 'translateX(-50%) translateY(0)';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=>{ toastBox.style.opacity='0'; toastBox.style.transform='translateX(-50%) translateY(10px)'; }, 1400);
+    }
+  </script>
+</body>
+</html>
